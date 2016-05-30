@@ -2,32 +2,55 @@
 #define POINT_H_
 
 struct Point {
-  int x, y;
+  double x, y;
 
+  Point operator +(const Point& other) const {
+    return {x + other.x, y + other.y};
+  }
+
+  void operator +=(const Point& other) {
+    x += other.x;
+    y += other.y;
+  }
+
+  Point operator -(const Point& other) const {
+    return {x - other.x, y - other.y};
+  }
+
+  void operator -=(const Point& other) {
+    x -= other.x;
+    y -= other.y;
+  }
+
+  Point operator *(const double factor) const {
+    return {x * factor, y * factor};
+  }
+
+  void operator *=(const double factor) {
+    x *= factor;
+    y *= factor;
+  }
+
+  Point operator /(const double divisor) const {
+    return {x / divisor, y / divisor};
+  }
+
+  void operator /=(const double divisor) {
+    x /= divisor;
+    y /= divisor;
+  }
+
+  double distance(const Point& other) const {
+    return sqrt((other.x - x) * (other.x - x) + (other.y - y) * (other.y - y));
+  }
+
+  double magnitude() const {
+    return sqrt((x * x) + (y * y));
+  }
+  
   void MoveBy(const Point& point) {
     x += point.x;
     y += point.y;
-  }
-
-  void MoveBy(const Point& delta, const Point& limit_top_left, const Point& limit_bottom_right) {
-    MoveBy(delta);
-    
-    if (x < limit_top_left.x) {
-      x = limit_bottom_right.x - 1;
-    } else if (x >= limit_bottom_right.x) {
-      x = limit_top_left.x;
-    }
-
-    if (y < limit_top_left.y) {
-      y = limit_bottom_right.y - 1;
-    } else if (y >= limit_bottom_right.y) {
-      y = limit_top_left.y;
-    }
-  }
-
-  void MoveTo(const Point& point) {
-    x = point.x;
-    y = point.y;
   }
 };
 

@@ -13,6 +13,8 @@ class ArduboyRenderer : public Renderer {
     
   private:
     Arduboy* arduboy_;
+
+    void RenderTail(const Boid& boid) const;
 };
 
 #endif

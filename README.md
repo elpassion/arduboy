@@ -10,6 +10,6 @@ Games and Demos for [Arduboy](http://arduboy.com) - a game system the size of a 
 
 * [**Boids**](/boids)
 
-  [Flocking behavior](https://en.wikipedia.org/wiki/Flocking_(behavior)) simulator, depicting flocking birds, shoaling fish or swarming bees. Done with as much of C++ and OOP as possible. Maybe too much :)
+  [Flocking behavior](https://en.wikipedia.org/wiki/Flocking_(behavior)) simulator, depicting flocking birds, shoaling fish or swarming bees. Done with as much of C++ and OOP as possible. Maybe a bit too much :)
 
   ![Boids](_media/boids.gif)
