@@ -2,7 +2,7 @@
 #define POINT_H_
 
 struct Point {
-  double x, y;
+  float x, y;
 
   Point operator +(const Point& other) const {
     return {x + other.x, y + other.y};
@@ -22,37 +22,34 @@ struct Point {
     y -= other.y;
   }
 
-  Point operator *(const double factor) const {
+  Point operator *(const float factor) const {
     return {x * factor, y * factor};
   }
 
-  void operator *=(const double factor) {
+  void operator *=(const float factor) {
     x *= factor;
     y *= factor;
   }
 
-  Point operator /(const double divisor) const {
+  Point operator /(const float divisor) const {
     return {x / divisor, y / divisor};
   }
 
-  void operator /=(const double divisor) {
+  void operator /=(const float divisor) {
     x /= divisor;
     y /= divisor;
   }
 
-  double distance(const Point& other) const {
-    return sqrt((other.x - x) * (other.x - x) + (other.y - y) * (other.y - y));
+  // For distance comparisons, we do not need exact distance.
+  // For optimisation purposes, we can use squared distance,
+  // so we can avoid expensive sqrt call.
+  float distanceSquared(const Point& other) const {
+    return (other.x - x) * (other.x - x) + (other.y - y) * (other.y - y);
   }
 
-  double magnitude() const {
-    return sqrt((x * x) + (y * y));
-  }
-  
-  void MoveBy(const Point& point) {
-    x += point.x;
-    y += point.y;
+  float magnitudeSquared() const {
+    return (x * x) + (y * y);
   }
 };
 
 #endif
-

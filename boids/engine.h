@@ -29,6 +29,7 @@ class Engine {
     void  InitializeBoids();
     void  InitializeRules();
     Point RandomPosition() const;
+    Point RandomVelocity() const;
 };
 
 #endif

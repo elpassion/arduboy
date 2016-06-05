@@ -1,10 +1,10 @@
 #include "engine.h"
+#include "bitmaps.h"
 
 Engine::Engine(Point bounds, byte boids_count, Renderer* renderer)
   : bounds_(bounds), boids_count_(boids_count), renderer_(renderer) {
-  if (boids_count_ > kMaxCount) {
+  if (boids_count_ > kMaxCount)
     boids_count_ = kMaxCount;
-  }
 
   InitializeBoids();
   InitializeRules();
@@ -12,7 +12,12 @@ Engine::Engine(Point bounds, byte boids_count, Renderer* renderer)
 
 void Engine::InitializeBoids() {
   for (byte i = 0; i < boids_count_; i++) {
-    boids_[i] = new Boid(RandomPosition(), {0, 0}, Boid::RandomType(), {random(10, 15) / 10, random(20, 30) / 10, random(75, 125) / 10});
+    boids_[i] = new Boid(RandomPosition(), RandomVelocity(), random(0, sizeof(boid_bitmaps) / sizeof(boid_bitmaps[0])), {
+      random(10, 15) / 10, 
+      random(600, 2000),
+      random(40, 125) / 10,
+      random(50, 150)
+    });
   }
 }
 
@@ -23,7 +28,7 @@ void Engine::InitializeRules() {
   rules_[3] = new KeepWithinBoundsRule(boids_, boids_count_, bounds_);
 }
 
-void Engine::Move() {  
+void Engine::Move() {
   for (byte i = 0; i < boids_count_; i++) {
     auto boid = boids_[i];
 
@@ -34,10 +39,6 @@ void Engine::Move() {
     boid->LimitVelocity();
     boid->Move();
   }
-
-//  for (byte i = 0; i < boids_count_; i++) {
-//    boids_[i]->Move();
-//  }
 }
 
 void Engine::EnableScatter() {
@@ -59,5 +60,9 @@ void Engine::Render() const {
 
 Point Engine::RandomPosition() const {
   return {random(bounds_.x), random(bounds_.y)};
+}
+
+Point Engine::RandomVelocity() const {
+  return {(random() - 0.5) / 10, (random() - 0.5) / 10};
 }
 

@@ -7,11 +7,7 @@
 
 class Boid {
   public:
-    enum BoidType { kEmptyCircle, kFullCircle, kEmptyTriangle, kFullTriangle, BoidType_MAX = kFullTriangle };
-
-    Boid(Point position = {1, 0}, Point velocity = {0, 0}, BoidType type = kFullCircle, Personality personality = {1.0, 3.0, 5.0});
-
-    static BoidType RandomType();
+    Boid(Point position = {0, 0}, Point velocity = {0, 0}, byte type = 0, Personality personality = {1, 100, 3.0, 25.0});
 
     void AddVelocity(const Point& velocity);
     void LimitVelocity(int limit = -1);
@@ -19,17 +15,15 @@ class Boid {
 
     Point       position()    const { return position_; }
     Point       velocity()    const { return velocity_; }
-    BoidType    type()        const { return type_; }
+    byte        type()        const { return type_; }
     Personality personality() const { return personality_; }
-
-    Point    previous_position(const int index) const;
+    Point       previous_position(const int index) const;
 
   private:
     Point       position_;
     Point       velocity_;
-    Point       new_velocity_;
-    BoidType    type_;
-    Point       previous_positions_[3];
+    byte        type_;
+    Point       previous_positions_[2];
     Personality personality_;
 };
 

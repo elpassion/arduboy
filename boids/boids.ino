@@ -21,13 +21,12 @@ void loop() {
   arduboy.clear();
   engine.Render();
   arduboy.display();
-  
+
   if (arduboy.pressed(A_BUTTON)) {
     engine.EnableScatter();
   } else {
     engine.DisableScatter();
   }
-  
-  engine.Move();  
-}
 
+  engine.Move();
+}

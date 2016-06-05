@@ -1,42 +1,33 @@
 #include "boid.h"
 
-Boid::BoidType Boid::RandomType() {
-  return static_cast<BoidType>(rand() % (BoidType_MAX + 1));
-}
-
-Boid::Boid(Point position, Point velocity, BoidType type, Personality personality) 
-  : position_(position), velocity_(velocity), new_velocity_(velocity), type_(type), personality_(personality) {
-  previous_positions_[0] = previous_positions_[1] = previous_positions_[2] = position;
+Boid::Boid(Point position, Point velocity, byte type, Personality personality)
+  : position_(position), velocity_(velocity), type_(type), personality_(personality) {
+  previous_positions_[0] = previous_positions_[1] = position_;
 }
 
 void Boid::AddVelocity(const Point& velocity) {
-  new_velocity_ += velocity;
+  velocity_ += velocity;
 }
 
 void Boid::LimitVelocity(int limit) {
-  if (limit < 0) {
+  if (limit < 0)
     limit = personality_.max_velocity;
-  }
-  
-  auto magnitude = new_velocity_.magnitude();
-  
-  if (magnitude > limit) {
-    new_velocity_ *= limit / magnitude;
-  }
+
+  auto magnitudeSquared = velocity_.magnitudeSquared();
+
+  if (magnitudeSquared > limit)
+    velocity_ *= sqrt(limit / magnitudeSquared);
 }
 
 void Boid::Move() {
-  if (previous_positions_[0].distance(position_ + new_velocity_) >= 3.0) {
-    previous_positions_[2] = previous_positions_[1];
+  if (previous_positions_[0].distanceSquared(position_ + velocity_) > 16.0) {
     previous_positions_[1] = previous_positions_[0];
     previous_positions_[0] = position_;
   }
-
-  velocity_ = new_velocity_;
-  position_.MoveBy(velocity_);
+  
+  position_ += velocity_;
 }
 
 Point Boid::previous_position(const int index) const {
   return previous_positions_[index];
 }
-
