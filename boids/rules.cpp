@@ -11,7 +11,7 @@ Point CenterOfMassRule::Compute(const Boid& boid, const Environment& environment
     }
   }
 
-  return count > 0 ? (((velocity / count) - boid.position()) * boid.personality().stickiness / (environment.scatter ? -100.0 : 100.0)) : velocity;
+  return boid.velocity() + (count > 0 ? (((velocity / count) - boid.position()) * boid.personality().stickiness / (environment.scatter ? -100.0 : 100.0)) : velocity);
 }
 
 Point KeepDistanceRule::Compute(const Boid& boid, const Environment& environment) const {
@@ -25,7 +25,7 @@ Point KeepDistanceRule::Compute(const Boid& boid, const Environment& environment
     }
   }
 
-  return velocity;
+  return boid.velocity() + velocity;
 }
 
 Point MatchVelocityRule::Compute(const Boid& boid, const Environment& environment) const {
@@ -39,18 +39,17 @@ Point MatchVelocityRule::Compute(const Boid& boid, const Environment& environmen
     }
   }
 
-  return count > 0 ? (((velocity / count) - boid.velocity()) / 8.0) : velocity;
+  return boid.velocity() + (count > 0 ? (((velocity / count) - boid.velocity()) / 8.0) : velocity);
 }
 
 Point LimitVelocityRule::Compute(const Boid& boid, const Environment& environment) const {
-  for (byte j = 0; j < boids_count_; j++) {
-  auto magnitudeSquared = boids_[j]->velocity().magnitudeSquared();
+  auto magnitudeSquared = boid.velocity().magnitudeSquared();
 
-  if (magnitudeSquared > boids_[j]->personality().max_velocity)
-    boids_[j]->MultiplyVelocity(sqrt(boids_[j]->personality().max_velocity / magnitudeSquared));
+  if (magnitudeSquared > boid.personality().max_velocity) {
+    return boid.velocity() * sqrt(boid.personality().max_velocity / magnitudeSquared);
+  } else {
+    return boid.velocity();
   }
-
-  return {0, 0};
 }
 
 Point KeepWithinBoundsRule::Compute(const Boid& boid, const Environment& environment) const {
@@ -68,5 +67,5 @@ Point KeepWithinBoundsRule::Compute(const Boid& boid, const Environment& environ
     velocity.y = -1.5;
   }
 
-  return velocity;
+  return boid.velocity() + velocity;
 }

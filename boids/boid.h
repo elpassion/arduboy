@@ -9,8 +9,7 @@ class Boid {
   public:
     Boid(Point position = {0, 0}, Point velocity = {0, 0}, Personality personality = {1, 100, 3.0, 25.0});
 
-    void AddVelocity(const Point& velocity);
-    void MultiplyVelocity(const float& factor);
+    void SetVelocity(const Point& velocity);
     void Move();
 
     Point       position()    const;

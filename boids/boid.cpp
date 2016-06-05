@@ -21,12 +21,8 @@ Point Boid::previous_position(const int& index) const {
   return previous_positions_[index];
 }
 
-void Boid::AddVelocity(const Point& velocity) {
-  velocity_ += velocity;
-}
-
-void Boid::MultiplyVelocity(const float& factor) {
-  velocity_ *= factor;
+void Boid::SetVelocity(const Point& velocity) {
+  velocity_ = velocity;
 }
 
 void Boid::Move() {

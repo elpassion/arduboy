@@ -29,7 +29,7 @@ void Engine::Move() {
     auto boid = boids_[i];
 
     for (const auto rule : rules_) {
-      boid->AddVelocity(rule->Compute(*boid, environment_));
+      boid->SetVelocity(rule->Compute(*boid, environment_));
     }
 
     boid->Move();
