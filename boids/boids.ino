@@ -15,7 +15,7 @@ void setup() {
 }
 
 void loop() {
-  if (!(arduboy.nextFrame()))
+  if (!arduboy.nextFrame())
     return;
 
   arduboy.clear();

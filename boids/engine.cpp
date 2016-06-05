@@ -3,8 +3,8 @@
 
 Engine::Engine(Point bounds, byte boids_count, Renderer* renderer)
   : bounds_(bounds), boids_count_(boids_count), renderer_(renderer) {
-  if (boids_count_ > kMaxCount)
-    boids_count_ = kMaxCount;
+  if (boids_count_ > kMaxBoidsCount)
+    boids_count_ = kMaxBoidsCount;
 
   InitializeBoids();
   InitializeRules();
@@ -12,12 +12,7 @@ Engine::Engine(Point bounds, byte boids_count, Renderer* renderer)
 
 void Engine::InitializeBoids() {
   for (byte i = 0; i < boids_count_; i++) {
-    boids_[i] = new Boid(RandomPosition(), RandomVelocity(), random(0, sizeof(boid_bitmaps) / sizeof(boid_bitmaps[0])), {
-      random(10, 15) / 10, 
-      random(600, 2000),
-      random(40, 125) / 10,
-      random(50, 150)
-    });
+    boids_[i] = new Boid(RandomPosition(), RandomVelocity(), RandomPersonality());
   }
 }
 
@@ -32,8 +27,8 @@ void Engine::Move() {
   for (byte i = 0; i < boids_count_; i++) {
     auto boid = boids_[i];
 
-    for (byte r = 0; r < kRulesCount; r++) {
-      boid->AddVelocity(rules_[r]->Compute(*boid, environment_));
+    for (const auto rule : rules_) {
+      boid->AddVelocity(rule->Compute(*boid, environment_));
     }
 
     boid->LimitVelocity();
@@ -66,3 +61,13 @@ Point Engine::RandomVelocity() const {
   return {(random() - 0.5) / 10, (random() - 0.5) / 10};
 }
 
+Personality Engine::RandomPersonality() const {
+  return {
+    random(10, 15) / 10,
+    random(600, 2000),
+    random(40, 125) / 10,
+    random(50, 150),
+    random(2, 32),
+    random(0, sizeof(boid_bitmaps) / sizeof(boid_bitmaps[0]))
+  };
+}

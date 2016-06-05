@@ -3,33 +3,35 @@
 
 #include "environment.h"
 #include "renderer.h"
+#include "personality.h"
 #include "point.h"
 #include "rules.h"
 
 class Engine {
   public:
-    Engine(Point bounds, byte boids_count = 10, Renderer* renderer = NULL);
+    Engine(Point bounds, byte boids_count = 10, Renderer* renderer = nullptr);
 
     void Move();
     void EnableScatter();
     void DisableScatter();
     void Render() const;
-    
+
   private:
-    static const byte kMaxCount   = 20;
-    static const byte kRulesCount = 4;
-    
-    Boid*       boids_[kMaxCount];
+    static const byte kMaxBoidsCount = 20;
+    static const byte kRulesCount    = 4;
+
+    Boid*       boids_[kMaxBoidsCount];
     byte        boids_count_;
     Point       bounds_;
     Renderer*   renderer_;
     Rule*       rules_[kRulesCount];
     Environment environment_ = {false};
 
-    void  InitializeBoids();
-    void  InitializeRules();
-    Point RandomPosition() const;
-    Point RandomVelocity() const;
+    void        InitializeBoids();
+    void        InitializeRules();
+    Point       RandomPosition() const;
+    Point       RandomVelocity() const;
+    Personality RandomPersonality() const;
 };
 
 #endif

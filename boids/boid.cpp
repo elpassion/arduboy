@@ -1,7 +1,7 @@
 #include "boid.h"
 
-Boid::Boid(Point position, Point velocity, byte type, Personality personality)
-  : position_(position), velocity_(velocity), type_(type), personality_(personality) {
+Boid::Boid(Point position, Point velocity, Personality personality)
+  : position_(position), velocity_(velocity), personality_(personality) {
   previous_positions_[0] = previous_positions_[1] = position_;
 }
 
@@ -20,11 +20,11 @@ void Boid::LimitVelocity(int limit) {
 }
 
 void Boid::Move() {
-  if (previous_positions_[0].distanceSquared(position_ + velocity_) > 16.0) {
+  if (previous_positions_[0].distanceSquared(position_ + velocity_) > personality_.tail_length) {
     previous_positions_[1] = previous_positions_[0];
     previous_positions_[0] = position_;
   }
-  
+
   position_ += velocity_;
 }
 

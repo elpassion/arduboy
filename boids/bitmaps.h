@@ -7,7 +7,8 @@ PROGMEM const unsigned char boid_bitmaps[][3] = {
   {0b111, 0b101, 0b111}, // Empty Square
   {0b010, 0b111, 0b010}, // Full Circle
   {0b010, 0b101, 0b010}, // Empty Circle
-  {0b101, 0b010, 0b101}  // Star
+  {0b101, 0b010, 0b101}, // Full Star
+  {0b101, 0b000, 0b101}  // Empty Star
 };
 
 #endif

@@ -7,7 +7,7 @@
 
 class Boid {
   public:
-    Boid(Point position = {0, 0}, Point velocity = {0, 0}, byte type = 0, Personality personality = {1, 100, 3.0, 25.0});
+    Boid(Point position = {0, 0}, Point velocity = {0, 0}, Personality personality = {1, 100, 3.0, 25.0});
 
     void AddVelocity(const Point& velocity);
     void LimitVelocity(int limit = -1);
@@ -15,14 +15,13 @@ class Boid {
 
     Point       position()    const { return position_; }
     Point       velocity()    const { return velocity_; }
-    byte        type()        const { return type_; }
     Personality personality() const { return personality_; }
+
     Point       previous_position(const int index) const;
 
   private:
     Point       position_;
     Point       velocity_;
-    byte        type_;
     Point       previous_positions_[2];
     Personality personality_;
 };
