@@ -3,12 +3,12 @@
 
 // Bitmaps are rotated 90 degrees CCW
 PROGMEM const unsigned char boid_bitmaps[][3] = {
-  {0b111, 0b111, 0b111}, // Full Square
-  {0b111, 0b101, 0b111}, // Empty Square
-  {0b010, 0b111, 0b010}, // Full Circle
-  {0b010, 0b101, 0b010}, // Empty Circle
-  {0b101, 0b010, 0b101}, // Full Star
-  {0b101, 0b000, 0b101}  // Empty Star
+  {B111, B111, B111}, // Full Square
+  {B111, B101, B111}, // Empty Square
+  {B010, B111, B010}, // Full Circle
+  {B010, B101, B010}, // Empty Circle
+  {B101, B010, B101}, // Full Star
+  {B101, B000, B101}  // Empty Star
 };
 
 #endif
