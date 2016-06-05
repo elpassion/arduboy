@@ -5,18 +5,28 @@ Boid::Boid(Point position, Point velocity, Personality personality)
   previous_positions_[0] = previous_positions_[1] = position_;
 }
 
+Point Boid::position() const {
+  return position_;
+}
+
+Point Boid::velocity() const {
+  return velocity_;
+}
+
+Personality Boid::personality() const {
+  return personality_;
+}
+
+Point Boid::previous_position(const int& index) const {
+  return previous_positions_[index];
+}
+
 void Boid::AddVelocity(const Point& velocity) {
   velocity_ += velocity;
 }
 
-void Boid::LimitVelocity(int limit) {
-  if (limit < 0)
-    limit = personality_.max_velocity;
-
-  auto magnitudeSquared = velocity_.magnitudeSquared();
-
-  if (magnitudeSquared > limit)
-    velocity_ *= sqrt(limit / magnitudeSquared);
+void Boid::MultiplyVelocity(const float& factor) {
+  velocity_ *= factor;
 }
 
 void Boid::Move() {
@@ -26,8 +36,4 @@ void Boid::Move() {
   }
 
   position_ += velocity_;
-}
-
-Point Boid::previous_position(const int index) const {
-  return previous_positions_[index];
 }

@@ -10,14 +10,13 @@ class Boid {
     Boid(Point position = {0, 0}, Point velocity = {0, 0}, Personality personality = {1, 100, 3.0, 25.0});
 
     void AddVelocity(const Point& velocity);
-    void LimitVelocity(int limit = -1);
+    void MultiplyVelocity(const float& factor);
     void Move();
 
-    Point       position()    const { return position_; }
-    Point       velocity()    const { return velocity_; }
-    Personality personality() const { return personality_; }
-
-    Point       previous_position(const int index) const;
+    Point       position()    const;
+    Point       velocity()    const;
+    Personality personality() const;
+    Point       previous_position(const int& index) const;
 
   private:
     Point       position_;

@@ -18,7 +18,7 @@ class Engine {
 
   private:
     static const byte kMaxBoidsCount = 20;
-    static const byte kRulesCount    = 4;
+    static const byte kRulesCount    = 5;
 
     Boid*       boids_[kMaxBoidsCount];
     byte        boids_count_;

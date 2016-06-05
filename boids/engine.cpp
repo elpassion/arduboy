@@ -21,6 +21,7 @@ void Engine::InitializeRules() {
   rules_[1] = new KeepDistanceRule(boids_, boids_count_);
   rules_[2] = new MatchVelocityRule(boids_, boids_count_);
   rules_[3] = new KeepWithinBoundsRule(boids_, boids_count_, bounds_);
+  rules_[4] = new LimitVelocityRule(boids_, boids_count_);
 }
 
 void Engine::Move() {
@@ -31,7 +32,6 @@ void Engine::Move() {
       boid->AddVelocity(rule->Compute(*boid, environment_));
     }
 
-    boid->LimitVelocity();
     boid->Move();
   }
 }

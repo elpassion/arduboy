@@ -42,6 +42,17 @@ Point MatchVelocityRule::Compute(const Boid& boid, const Environment& environmen
   return count > 0 ? (((velocity / count) - boid.velocity()) / 8.0) : velocity;
 }
 
+Point LimitVelocityRule::Compute(const Boid& boid, const Environment& environment) const {
+  for (byte j = 0; j < boids_count_; j++) {
+  auto magnitudeSquared = boids_[j]->velocity().magnitudeSquared();
+
+  if (magnitudeSquared > boids_[j]->personality().max_velocity)
+    boids_[j]->MultiplyVelocity(sqrt(boids_[j]->personality().max_velocity / magnitudeSquared));
+  }
+
+  return {0, 0};
+}
+
 Point KeepWithinBoundsRule::Compute(const Boid& boid, const Environment& environment) const {
   Point velocity = {0, 0};
 

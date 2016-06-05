@@ -33,11 +33,17 @@ class MatchVelocityRule : public Rule {
     Point Compute(const Boid& boid, const Environment& environment) const;
 };
 
+class LimitVelocityRule : public Rule {
+  public:
+    using Rule::Rule;
+    Point Compute(const Boid& boid, const Environment& environment) const;
+};
+
 class KeepWithinBoundsRule : public Rule {
   public:
     KeepWithinBoundsRule(Boid** boids, const byte boids_count, Point bounds) : Rule(boids, boids_count), bounds_(bounds) {}
     Point Compute(const Boid& boid, const Environment& environment) const;
-    
+
   private:
     Point bounds_;
 };
