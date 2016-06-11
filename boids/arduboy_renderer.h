@@ -7,12 +7,12 @@
 
 class ArduboyRenderer : public Renderer {
   public:
-    ArduboyRenderer(Arduboy* arduboy) : arduboy_(arduboy) {}
-    
+    ArduboyRenderer(Arduboy& arduboy) : arduboy_(arduboy) {}
+
     void Render(const Boid& boid) const;
-    
+
   private:
-    Arduboy* arduboy_;
+    Arduboy& arduboy_;
 };
 
 #endif

@@ -1,7 +1,7 @@
 #include "engine.h"
 #include "bitmaps.h"
 
-Engine::Engine(Point bounds, byte boids_count, Renderer* renderer)
+Engine::Engine(Point bounds, Renderer& renderer, byte boids_count)
   : bounds_(bounds), boids_count_(boids_count), renderer_(renderer) {
   if (boids_count_ > kMaxBoidsCount)
     boids_count_ = kMaxBoidsCount;
@@ -45,11 +45,8 @@ void Engine::DisableScatter() {
 }
 
 void Engine::Render() const {
-  if (!renderer_)
-    return;
-
   for (byte i = 0; i < boids_count_; i++) {
-    renderer_->Render(*boids_[i]);
+    renderer_.Render(*boids_[i]);
   }
 }
 

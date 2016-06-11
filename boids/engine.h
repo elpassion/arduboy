@@ -9,7 +9,7 @@
 
 class Engine {
   public:
-    Engine(Point bounds, byte boids_count = 10, Renderer* renderer = nullptr);
+    Engine(Point bounds, Renderer& renderer, byte boids_count = 10);
 
     void Move();
     void EnableScatter();
@@ -23,7 +23,7 @@ class Engine {
     Boid*       boids_[kMaxBoidsCount];
     byte        boids_count_;
     Point       bounds_;
-    Renderer*   renderer_;
+    Renderer&   renderer_;
     Rule*       rules_[kRulesCount];
     Environment environment_ = {false};
 

@@ -5,8 +5,8 @@
 #include "engine.h"
 
 auto arduboy  = Arduboy();
-auto renderer = ArduboyRenderer(&arduboy);
-auto engine   = Engine({WIDTH, HEIGHT}, 10, &renderer);
+auto renderer = ArduboyRenderer(arduboy);
+auto engine   = Engine({WIDTH, HEIGHT}, renderer, 10);
 
 void setup() {
   arduboy.begin();
@@ -21,12 +21,14 @@ void loop() {
   arduboy.clear();
   engine.Render();
   arduboy.display();
+  handleInput();
+  engine.Move();
+}
 
+void handleInput() {
   if (arduboy.pressed(A_BUTTON)) {
     engine.EnableScatter();
   } else {
     engine.DisableScatter();
   }
-
-  engine.Move();
 }
