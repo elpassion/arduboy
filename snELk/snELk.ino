@@ -28,22 +28,29 @@ enum SnakeMove {
 
 Arduboy arduboy;
 Snake* snake;
-
 void setup() {
   arduboy.begin();
   snake = initSnake(50, 50);
 }
 
 Snake* initSnake(int column, int row) {
-  SnakePart* snakePart = new SnakePart;
-  snakePart->column = column;
-  snakePart->row = row;
-  snakePart->next = NULL;
-  snakePart->prev = NULL;
+  SnakePart* head = new SnakePart;
+  head->column = column;
+  head->row = row;
 
+  SnakePart* tail = new SnakePart;
+  tail->column = column - 1;
+  tail->row = row;
+
+  head->next = NULL;
+  head->prev = tail;
+
+  tail->next = head;
+  tail->prev = NULL;
+  
   Snake* snake = new Snake;
-  snake->head = snakePart;
-  snake->tail = snakePart;
+  snake->head = head;
+  snake->tail = tail;
 
   return snake;
 }
@@ -76,7 +83,44 @@ void handleInput() {
 }
 
 void moveSnake(Snake* snake, enum SnakeMove move) {
+  int newColumn = snake->head->column;
+  int newRow = snake->head->row;
+  
+  switch(move) {
+    case left:
+      newColumn--;
+      break;
+    case right:
+      newColumn++;
+      break;
+    case up:
+      newRow--;
+      break;
+    case down:
+      newRow++;
+      break;
+  }
+  if (validateMove(newColumn, newRow)) {
+    makeTailToBecomeHead(snake, newColumn, newRow);    
+  }
+}
 
+void makeTailToBecomeHead(Snake* snake, int headColumn, int headRow) {
+  snake->tail = snake->tail->next;
+
+  SnakePart* newHead = snake->tail->prev;
+  snake->tail->prev = NULL;
+
+  newHead->next = NULL;
+  newHead->prev = snake->head;
+  newHead->column = headColumn;
+  newHead->row = headRow;
+  snake->head->next = newHead;
+  snake->head = newHead;
+}
+
+bool validateMove(int column, int row) {
+  return true;
 }
 
 void renderGame() {
@@ -96,7 +140,8 @@ void renderFrame(uint8_t color) {
 void renderSnake(Snake* snake) {
   SnakePart* snakePart = snake->head;
   while(snakePart) {
-    arduboy.drawPixel(snakePart->row, snakePart->column, WHITE);
+    arduboy.drawPixel(snakePart->column, snakePart->row, WHITE);
     snakePart = snakePart->prev;
   }
 }
+
