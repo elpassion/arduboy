@@ -29,6 +29,7 @@ enum SnakeMove {
 struct GameState {
   bool started;
   bool lost;
+  SnakeMove lastMove;
   Snake* snake;
 };
 
@@ -48,8 +49,9 @@ GameState* initGameState() {
 }
 
 void loop() {
-  if (!arduboy.nextFrame()) return;
   handleInput(gameState);
+  if (!arduboy.nextFrame()) return;
+  moveSnake(gameState);
   renderGame(gameState);
 }
 
@@ -59,13 +61,13 @@ void handleInput(GameState* gameState) {
 
   if(gameState->started && !gameState->lost) {
     if(buttons & LEFT) {
-      moveSnake(gameState, left);
+      gameState->lastMove = left;
     } else if(buttons & RIGHT) {
-      moveSnake(gameState, right);
+      gameState->lastMove = right;
     } else if(buttons & UP) {
-      moveSnake(gameState, up);
+      gameState->lastMove = up;
     } else if(buttons & DOWN) {
-      moveSnake(gameState, down);
+      gameState->lastMove = down;
     }
   } else {
     if(buttons & A_BUTTON) {
@@ -74,12 +76,14 @@ void handleInput(GameState* gameState) {
   }
 }
 
-void moveSnake(GameState* gameState, enum SnakeMove move) {
+void moveSnake(GameState* gameState) {
+  if (!gameState->started) return;
+  
   SnakePart* head = gameState->snake->head;
   int newColumn = head->column;
   int newRow = head->row;
 
-  switch(move) {
+  switch(gameState->lastMove) {
     case left:
       newColumn--;
       break;
@@ -129,6 +133,7 @@ void startGame(GameState* gameState) {
   gameState->started = true;
   gameState->lost = false;
   gameState->snake = initSnake(50, 50);
+  gameState->lastMove = right;
 }
 
 Snake* initSnake(int column, int row) {
@@ -157,12 +162,15 @@ Snake* initSnake(int column, int row) {
 void renderGame(GameState* gameState) {
   arduboy.clear();
   if (gameState->started) {
+    Serial.println("in game screen");
     renderInGameScreen(gameState);
     if (gameState->lost) {
+      Serial.println("lost screen");
       renderReplayScreen();
     }
   } else {
      if(!gameState->lost) {
+      Serial.println("initial screen");
       renderInitialScreen();
     }
   }
