@@ -57,7 +57,7 @@ void loop() {
 void handleInput(GameState* gameState) {
   uint8_t buttons = arduboy.getInput();
 
-  if(gameState->started) {
+  if(gameState->started && !gameState->lost) {
     if(buttons & LEFT) {
       moveSnake(gameState, left);
     } else if(buttons & RIGHT) {
@@ -127,6 +127,7 @@ void makeTailToBecomeHead(Snake* snake, int headColumn, int headRow) {
 
 void startGame(GameState* gameState) {
   gameState->started = true;
+  gameState->lost = false;
   gameState->snake = initSnake(50, 50);
 }
 
@@ -157,10 +158,11 @@ void renderGame(GameState* gameState) {
   arduboy.clear();
   if (gameState->started) {
     renderInGameScreen(gameState);
-  } else {
     if (gameState->lost) {
       renderReplayScreen();
-    } else {
+    }
+  } else {
+     if(!gameState->lost) {
       renderInitialScreen();
     }
   }
@@ -188,7 +190,10 @@ void renderSnake(Snake* snake) {
 }
 
 void renderReplayScreen() {
-
+  arduboy.setCursor(37, 15);
+  arduboy.print("GAME OVER");
+  arduboy.setCursor(16, 30);
+  arduboy.print("Press A to start");
 }
 
 void renderInitialScreen() {
