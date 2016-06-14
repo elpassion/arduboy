@@ -28,6 +28,7 @@ enum SnakeMove {
 
 Arduboy arduboy;
 Snake* snake;
+
 void setup() {
   arduboy.begin();
   snake = initSnake(50, 50);
@@ -57,11 +58,11 @@ Snake* initSnake(int column, int row) {
 
 void loop() {
   if (!arduboy.nextFrame()) return;
-  handleInput();
-  renderGame();
+  handleInput(snake);
+  renderGame(snake);
 }
 
-void handleInput() {
+void handleInput(Snake* snake) {
   uint8_t buttons = arduboy.getInput();
 
   if(buttons & LEFT) {
@@ -123,7 +124,7 @@ bool validateMove(int column, int row) {
   return true;
 }
 
-void renderGame() {
+void renderGame(Snake* snake) {
   arduboy.clear();
   renderFrame(WHITE);
   renderSnake(snake);
