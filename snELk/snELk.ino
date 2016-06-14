@@ -1,7 +1,7 @@
 #include <Arduboy.h>
 
-#define B_BUTTON 0b00000100
-#define A_BUTTON 0b00001000
+#define A_BUTTON 0b00000100
+#define B_BUTTON 0b00001000
 #define DOWN     0b00010000
 #define LEFT     0b00100000
 #define RIGHT    0b01000000
@@ -26,12 +26,79 @@ enum SnakeMove {
     down
 };
 
+struct GameState {
+  bool started;
+  bool lost;
+  Snake* snake;
+};
+
 Arduboy arduboy;
-Snake* snake;
+GameState* gameState;
 
 void setup() {
   arduboy.begin();
-  snake = initSnake(50, 50);
+  gameState = initGameState();
+}
+
+GameState* initGameState() {
+  GameState* gameState = new GameState;
+  gameState->started = false;
+  gameState->lost = false;
+  return gameState;
+}
+
+void loop() {
+  if (!arduboy.nextFrame()) return;
+  handleInput(gameState);
+  renderGame(gameState);
+}
+
+void handleInput(GameState* gameState) {
+  uint8_t buttons = arduboy.getInput();
+
+  if(gameState->started) {
+    if(buttons & LEFT) {
+      moveSnake(gameState->snake, left);
+    } else if(buttons & RIGHT) {
+      moveSnake(gameState->snake, right);
+    } else if(buttons & UP) {
+      moveSnake(gameState->snake, up);
+    } else if(buttons & DOWN) {
+      moveSnake(gameState->snake, down);
+    }
+  } else {
+    if(buttons & A_BUTTON) {
+      startGame(gameState);
+    }
+  }
+}
+
+void moveSnake(Snake* snake, enum SnakeMove move) {
+  int newColumn = snake->head->column;
+  int newRow = snake->head->row;
+
+  switch(move) {
+    case left:
+      newColumn--;
+      break;
+    case right:
+      newColumn++;
+      break;
+    case up:
+      newRow--;
+      break;
+    case down:
+      newRow++;
+      break;
+  }
+  if (validateMove(newColumn, newRow)) {
+    makeTailToBecomeHead(snake, newColumn, newRow);    
+  }
+}
+
+void startGame(GameState* gameState) {
+  gameState->started = true;
+  gameState->snake = initSnake(50, 50);
 }
 
 Snake* initSnake(int column, int row) {
@@ -56,56 +123,6 @@ Snake* initSnake(int column, int row) {
   return snake;
 }
 
-void loop() {
-  if (!arduboy.nextFrame()) return;
-  handleInput(snake);
-  renderGame(snake);
-}
-
-void handleInput(Snake* snake) {
-  uint8_t buttons = arduboy.getInput();
-
-  if(buttons & LEFT) {
-    moveSnake(snake, left);
-  } else if(buttons & RIGHT) {
-    moveSnake(snake, right);
-  } else if(buttons & UP) {
-    moveSnake(snake, up);
-  } else if(buttons & DOWN) {
-    moveSnake(snake, down);
-  }
-
-  if(buttons & A_BUTTON) {
-    Serial.println("A button pressed");
-  }
-  if(buttons & B_BUTTON) {
-    Serial.println("B button pressed");
-  }
-}
-
-void moveSnake(Snake* snake, enum SnakeMove move) {
-  int newColumn = snake->head->column;
-  int newRow = snake->head->row;
-  
-  switch(move) {
-    case left:
-      newColumn--;
-      break;
-    case right:
-      newColumn++;
-      break;
-    case up:
-      newRow--;
-      break;
-    case down:
-      newRow++;
-      break;
-  }
-  if (validateMove(newColumn, newRow)) {
-    makeTailToBecomeHead(snake, newColumn, newRow);    
-  }
-}
-
 void makeTailToBecomeHead(Snake* snake, int headColumn, int headRow) {
   snake->tail = snake->tail->next;
 
@@ -124,11 +141,32 @@ bool validateMove(int column, int row) {
   return true;
 }
 
-void renderGame(Snake* snake) {
+void renderGame(GameState* gameState) {
   arduboy.clear();
-  renderFrame(WHITE);
-  renderSnake(snake);
+  if (gameState->started) {
+    renderInGameScreen(gameState);
+  } else {
+    if (gameState->lost) {
+      renderReplayScreen();
+    } else {
+      renderInitialScreen();
+    }
+  }
   arduboy.display();
+}
+
+void renderInGameScreen(GameState* gameState) {
+  renderFrame(WHITE);
+  renderSnake(gameState->snake);
+}
+
+void renderReplayScreen() {
+  
+}
+
+void renderInitialScreen() {
+  arduboy.setCursor(16, 50);
+  arduboy.print("Press A to start");
 }
 
 void renderFrame(uint8_t color) {
