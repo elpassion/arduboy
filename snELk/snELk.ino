@@ -56,6 +56,7 @@ void loop() {
 
 void handleInput() {
   uint8_t buttons = arduboy.getInput();
+
   if(buttons & LEFT) {
     moveSnake(snake, left);
   } else if(buttons & RIGHT) {
@@ -72,6 +73,10 @@ void handleInput() {
   if(buttons & B_BUTTON) {
     Serial.println("B button pressed");
   }
+}
+
+void moveSnake(Snake* snake, enum SnakeMove move) {
+
 }
 
 void renderGame() {
@@ -91,12 +96,7 @@ void renderFrame(uint8_t color) {
 void renderSnake(Snake* snake) {
   SnakePart* snakePart = snake->head;
   while(snakePart) {
-    Serial.println(snakePart->row);
     arduboy.drawPixel(snakePart->row, snakePart->column, WHITE);
     snakePart = snakePart->prev;
   }
-}
-
-void moveSnake(Snake* snake, enum SnakeMove move) {
-
 }
