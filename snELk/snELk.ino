@@ -1,12 +1,5 @@
 #include <Arduboy.h>
 
-#define A_BUTTON 0b00000100
-#define B_BUTTON 0b00001000
-#define DOWN     0b00010000
-#define LEFT     0b00100000
-#define RIGHT    0b01000000
-#define UP       0b10000000
-
 struct SnakePart {
   SnakePart* next;
   SnakePart* prev;
@@ -60,13 +53,13 @@ void handleInput(GameState* gameState) {
   uint8_t buttons = arduboy.getInput();
 
   if(gameState->started && !gameState->lost) {
-    if(buttons & LEFT) {
+    if(buttons & LEFT_BUTTON) {
       gameState->lastMove = left;
-    } else if(buttons & RIGHT) {
+    } else if(buttons & RIGHT_BUTTON) {
       gameState->lastMove = right;
-    } else if(buttons & UP) {
+    } else if(buttons & UP_BUTTON) {
       gameState->lastMove = up;
-    } else if(buttons & DOWN) {
+    } else if(buttons & DOWN_BUTTON) {
       gameState->lastMove = down;
     }
   } else {
