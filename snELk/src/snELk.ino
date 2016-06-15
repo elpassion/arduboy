@@ -39,6 +39,7 @@ void setup() {
 
 GameState* initGameState() {
   GameState* gameState = new GameState;
+  gameState->snake = NULL;
   gameState->started = false;
   gameState->lost = false;
   return gameState;
