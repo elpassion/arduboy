@@ -125,11 +125,21 @@ void makeTailToBecomeHead(Snake* snake, int headColumn, int headRow) {
 void startGame(GameState* gameState) {
   gameState->started = true;
   gameState->lost = false;
+  if (gameState->snake) deleteSnake(gameState->snake);
   gameState->snake = initSnake(50, 50);
   gameState->lastMove = right;
 }
 
-Snake* initSnake(int column, int row) {
+void deleteSnake(Snake* snake) {
+  SnakePart* snakePart = snake->tail;
+  while(snakePart) {
+    SnakePart* nextPart = snakePart->next;
+    delete snakePart;
+    snakePart = nextPart;
+  }
+  delete snake;
+}
+Snake* initSnake(int column, int row) { 
   SnakePart* head = new SnakePart;
   head->column = column;
   head->row = row;
