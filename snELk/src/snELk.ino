@@ -1,8 +1,5 @@
 #include <Arduboy.h>
 
-#define WIDTH_PIXEL 128
-#define HEIGTH_PIXEL 64
-
 struct SnakePart {
   SnakePart* next;
   SnakePart* prev;
@@ -109,7 +106,7 @@ bool validateMove(GameState* gameState, int column, int row) {
 }
 
 bool isFrameHit(int column, int row) {
-  return (column == 0 || column == (WIDTH_PIXEL - 1) || row == 0 || row == (HEIGTH_PIXEL - 1));
+  return (column == 0 || column == (WIDTH - 1) || row == 0 || row == (HEIGHT - 1));
 }
 
 void makeTailToBecomeHead(Snake* snake, int headColumn, int headRow) {
@@ -191,10 +188,10 @@ void renderInGameScreen(GameState* gameState) {
 }
 
 void renderFrame(uint8_t color) {
-  arduboy.drawFastVLine(0, 0, HEIGTH_PIXEL, color);
-  arduboy.drawFastVLine(WIDTH_PIXEL - 1, 0, HEIGTH_PIXEL, color);
-  arduboy.drawFastHLine(0, HEIGTH_PIXEL - 1, WIDTH_PIXEL, color);
-  arduboy.drawFastHLine(0, 0, WIDTH_PIXEL, color);
+  arduboy.drawFastVLine(0, 0, HEIGHT, color);
+  arduboy.drawFastVLine(WIDTH - 1, 0, HEIGHT, color);
+  arduboy.drawFastHLine(0, HEIGHT - 1, WIDTH, color);
+  arduboy.drawFastHLine(0, 0, WIDTH, color);
 }
 
 void renderSnake(Snake* snake) {
