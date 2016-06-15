@@ -74,7 +74,7 @@ void handleInput(GameState* gameState) {
 
 void moveSnake(GameState* gameState) {
   if (!gameState->started) return;
-  
+
   SnakePart* head = gameState->snake->head;
   int newColumn = head->column;
   int newRow = head->row;
@@ -94,7 +94,7 @@ void moveSnake(GameState* gameState) {
       break;
   }
   if (validateMove(gameState, newColumn, newRow)) {
-    makeTailToBecomeHead(gameState->snake, newColumn, newRow);    
+    makeTailToBecomeHead(gameState->snake, newColumn, newRow);
   } else {
     gameState->lost = true;
   }
@@ -143,7 +143,7 @@ void deleteSnake(Snake* snake) {
   delete snake;
 }
 
-Snake* initSnake(int column, int row) { 
+Snake* initSnake(int column, int row) {
   SnakePart* head = new SnakePart;
   head->column = column;
   head->row = row;
@@ -157,7 +157,7 @@ Snake* initSnake(int column, int row) {
 
   tail->next = head;
   tail->prev = NULL;
-  
+
   Snake* snake = new Snake;
   snake->head = head;
   snake->tail = tail;
@@ -215,4 +215,3 @@ void renderInitialScreen() {
   arduboy.setCursor(16, 50);
   arduboy.print("Press A to start");
 }
-

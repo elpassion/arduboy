@@ -1,0 +1,3 @@
+.pioenvs
+src/.clang_complete
+src/.gcc-flags.json
