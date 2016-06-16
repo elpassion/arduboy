@@ -1,6 +1,6 @@
 #include <Arduboy.h>
 
-#define SNAKE_WEIGHT 1
+#define SNAKE_WEIGHT 3
 #define SNAKE_SPACE 1
 #define FRAME_THICKNESS 1
 
@@ -47,6 +47,7 @@ GameState* gameState;
 
 void setup() {
   arduboy.begin();
+  arduboy.setFrameRate(20);
   gameState = initGameState();
 }
 
@@ -158,10 +159,10 @@ bool validateMove(DisplayProperties* displayProperties, Position position) {
 }
 
 bool isFrameHit(DisplayProperties* displayProperties, Position position) {
-  return position.column == 0 ||
-    position.column == displayProperties->frameX ||
-    position.row == 0 ||
-    position.row == displayProperties->frameY;
+  return position.column <= 0 ||
+    position.column > displayProperties->maxSnakeColumns ||
+    position.row <= 0 ||
+    position.row > displayProperties->maxSnakeRows;
 }
 
 void makeTailToBecomeNewHead(Snake* snake, Position newPositionOfHead) {
@@ -198,16 +199,11 @@ void deleteSnake(Snake* snake) {
 }
 
 Snake* initSnake(DisplayProperties* displayProperties) {
-  int column = centerPixel(WIDTH);
-  int row = centerPixel(HEIGHT);
-
-  displayProperties->frameY;
-  displayProperties->maxSnakeColumns;
-  displayProperties->maxSnakeRows;
+  Position position = centerPosition(displayProperties);
 
   Snake* snake = new Snake;
-  snake->head = newSnakePart(column - 1, row);
-  snake->tail = newSnakePart(column, row);
+  snake->head = newSnakePart(position.column - 1, position.row);
+  snake->tail = newSnakePart(position.column, position.row);
 
   snake->head->next = NULL;
   snake->head->prev = snake->tail;
@@ -218,8 +214,13 @@ Snake* initSnake(DisplayProperties* displayProperties) {
   return snake;
 }
 
-int centerPixel(int screenLength) {
-  return ((screenLength - 2*FRAME_THICKNESS) / 2) + FRAME_THICKNESS;
+Position centerPosition(DisplayProperties* displayProperties) {
+  Position position;
+
+  position.row = displayProperties->maxSnakeRows / 2;
+  position.column = displayProperties->maxSnakeColumns / 2;
+
+  return position;
 }
 
 SnakePart* newSnakePart(int column, int row) {
@@ -264,9 +265,15 @@ void renderFrame(DisplayProperties* displayProperties, uint8_t color) {
 void renderSnake(Snake* snake) {
   SnakePart* snakePart = snake->head;
   while(snakePart) {
-    arduboy.drawPixel(snakePart->position->column, snakePart->position->row, WHITE);
+    int column = calcPixelPosition(snakePart->position->column);
+    int row = calcPixelPosition(snakePart->position->row);
+    arduboy.fillRect(column, row, SNAKE_WEIGHT, SNAKE_WEIGHT, WHITE);
     snakePart = snakePart->prev;
   }
+}
+
+int calcPixelPosition(int position) {
+  return FRAME_THICKNESS + SNAKE_SPACE + (SNAKE_WEIGHT + SNAKE_SPACE) * (position - 1);
 }
 
 void renderReplayScreen() {
