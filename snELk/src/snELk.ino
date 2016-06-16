@@ -250,15 +250,15 @@ void renderGame(GameState* gameState) {
 }
 
 void renderInGameScreen(GameState* gameState) {
-  renderFrame(WHITE);
+  renderFrame(gameState->displayProperties, WHITE);
   renderSnake(gameState->snake);
 }
 
-void renderFrame(uint8_t color) {
-  arduboy.drawFastVLine(0, 0, gameState->displayProperties->frameY, color);
-  arduboy.drawFastVLine(gameState->displayProperties->frameX, 0, gameState->displayProperties->frameY + FRAME_THICKNESS, color);
-  arduboy.drawFastHLine(0, 0, gameState->displayProperties->frameX, color);
-  arduboy.drawFastHLine(0, gameState->displayProperties->frameY, gameState->displayProperties->frameX + FRAME_THICKNESS, color);
+void renderFrame(DisplayProperties* displayProperties, uint8_t color) {
+  arduboy.drawFastVLine(0, 0, displayProperties->frameY, color);
+  arduboy.drawFastVLine(displayProperties->frameX, 0, displayProperties->frameY + FRAME_THICKNESS, color);
+  arduboy.drawFastHLine(0, 0, displayProperties->frameX, color);
+  arduboy.drawFastHLine(0, displayProperties->frameY, displayProperties->frameX + FRAME_THICKNESS, color);
 }
 
 void renderSnake(Snake* snake) {
