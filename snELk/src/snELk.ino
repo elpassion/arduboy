@@ -278,12 +278,12 @@ int calcPixelPosition(int snakePosition) {
 
 void renderReplayScreen() {
   arduboy.setCursor(37, 15);
-  arduboy.print("GAME OVER");
+  arduboy.print(F("GAME OVER"));
   arduboy.setCursor(16, 30);
-  arduboy.print("Press A to start");
+  arduboy.print(F("Press A to start"));
 }
 
 void renderInitialScreen() {
   arduboy.setCursor(16, 50);
-  arduboy.print("Press A to start");
+  arduboy.print(F("Press A to start"));
 }
