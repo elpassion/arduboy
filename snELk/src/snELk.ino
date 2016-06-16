@@ -1,3 +1,4 @@
+#include <MemoryFree.h>
 #include <Arduboy.h>
 
 #define SNAKE_WEIGHT 3
@@ -12,7 +13,7 @@ struct Position {
 struct SnakePart {
   SnakePart* next;
   SnakePart* prev;
-  Position* position;
+  Position position;
 };
 
 struct Snake {
@@ -37,38 +38,39 @@ struct DisplayProperties {
 struct GameState {
   bool started;
   bool lost;
-  Snake* snake;
+  Snake snake;
   SnakeMove lastMove;
-  DisplayProperties* displayProperties;
+  DisplayProperties displayProperties;
 };
 
 Arduboy arduboy;
-GameState* gameState;
+GameState gameState;
 
 void setup() {
   arduboy.begin();
-  arduboy.setFrameRate(20);
+  arduboy.setFrameRate(1);
   gameState = initGameState();
 }
 
-GameState* initGameState() {
-  GameState* gameState = new GameState;
+GameState initGameState() {
+  GameState gameState;
 
-  gameState->snake = NULL;
-  gameState->started = false;
-  gameState->lost = false;
-  gameState->displayProperties = initDisplayProperties();
+  gameState.snake.tail = NULL;
+  gameState.snake.head = NULL;
+  gameState.started = false;
+  gameState.lost = false;
+  gameState.displayProperties = initDisplayProperties();
 
   return gameState;
 }
 
-DisplayProperties* initDisplayProperties() {
-  DisplayProperties* displayProperties = new DisplayProperties;
+DisplayProperties initDisplayProperties() {
+  DisplayProperties displayProperties;
 
-  displayProperties->maxSnakeColumns = snakeLinesInSpace(WIDTH);
-  displayProperties->maxSnakeRows = snakeLinesInSpace(HEIGHT);
-  displayProperties->frameX = framePosition(displayProperties->maxSnakeColumns);
-  displayProperties->frameY = framePosition(displayProperties->maxSnakeRows);
+  displayProperties.maxSnakeColumns = snakeLinesInSpace(WIDTH);
+  displayProperties.maxSnakeRows = snakeLinesInSpace(HEIGHT);
+  displayProperties.frameX = framePosition(displayProperties.maxSnakeColumns);
+  displayProperties.frameY = framePosition(displayProperties.maxSnakeRows);
 
   return displayProperties;
 }
@@ -77,7 +79,7 @@ int snakeLinesInSpace(int screenLength) {
   int spaceBetweenFrames = screenLength - 2*FRAME_THICKNESS;
   int spaceBeforeRightFrame = SNAKE_SPACE;
   int widthOfSingleSnakeLine = SNAKE_WEIGHT + SNAKE_SPACE;
-  return (spaceBetweenFrames - spaceBeforeRightFrame )/ widthOfSingleSnakeLine;
+  return (spaceBetweenFrames - spaceBeforeRightFrame ) / widthOfSingleSnakeLine;
 }
 
 int framePosition(int snakeLines) {
@@ -92,21 +94,23 @@ void loop() {
   if (!arduboy.nextFrame()) return;
   moveSnake(gameState);
   renderGame(gameState);
+  Serial.print(freeMemory());
+  Serial.println(F(" free Bytes"));
 }
 
 // HANDLE INPUT
-void handleInput(GameState* gameState) {
+void handleInput(GameState& gameState) {
   uint8_t buttons = arduboy.getInput();
 
   if(gameStartedAndNotLost(gameState)) {
     if(buttons & LEFT_BUTTON) {
-      gameState->lastMove = left;
+      gameState.lastMove = left;
     } else if(buttons & RIGHT_BUTTON) {
-      gameState->lastMove = right;
+      gameState.lastMove = right;
     } else if(buttons & UP_BUTTON) {
-      gameState->lastMove = up;
+      gameState.lastMove = up;
     } else if(buttons & DOWN_BUTTON) {
-      gameState->lastMove = down;
+      gameState.lastMove = down;
     }
   } else {
     if(buttons & A_BUTTON) {
@@ -115,29 +119,29 @@ void handleInput(GameState* gameState) {
   }
 }
 
-bool gameStartedAndNotLost(GameState* gameState) {
-  return gameState->started && !gameState->lost;
+bool gameStartedAndNotLost(GameState gameState) {
+  return gameState.started && !gameState.lost;
 }
 
-void moveSnake(GameState* gameState) {
-  if (!gameState->started) return;
+void moveSnake(GameState& gameState) {
+  if (!gameState.started) return;
 
   Position newPositionOfHead = nextHeadPosition(gameState);
-  if (validateMove(gameState->displayProperties, newPositionOfHead)) {
-    makeTailToBecomeNewHead(gameState->snake, newPositionOfHead);
+  if (validateMove(gameState.displayProperties, newPositionOfHead)) {
+    makeTailToBecomeNewHead(gameState.snake, newPositionOfHead);
   } else {
-    gameState->lost = true;
+    gameState.lost = true;
   }
 }
 
-Position nextHeadPosition(GameState* gameState) {
-  SnakePart* head = gameState->snake->head;
+Position nextHeadPosition(GameState gameState) {
+  SnakePart* head = gameState.snake.head;
 
   Position position;
-  position.column = head->position->column;
-  position.row = head->position->row;
+  position.column = head->position.column;
+  position.row = head->position.row;
 
-  switch(gameState->lastMove) {
+  switch(gameState.lastMove) {
     case left:
       position.column--;
       break;
@@ -154,79 +158,82 @@ Position nextHeadPosition(GameState* gameState) {
   return position;
 }
 
-bool validateMove(DisplayProperties* displayProperties, Position position) {
+bool validateMove(DisplayProperties displayProperties, Position position) {
   return !isFrameHit(displayProperties, position);
 }
 
-bool isFrameHit(DisplayProperties* displayProperties, Position position) {
+bool isFrameHit(DisplayProperties displayProperties, Position position) {
   return position.column <= 0 ||
-    position.column > displayProperties->maxSnakeColumns ||
+    position.column > displayProperties.maxSnakeColumns ||
     position.row <= 0 ||
-    position.row > displayProperties->maxSnakeRows;
+    position.row > displayProperties.maxSnakeRows;
 }
 
-void makeTailToBecomeNewHead(Snake* snake, Position newPositionOfHead) {
-  snake->tail = snake->tail->next;
+void makeTailToBecomeNewHead(Snake& snake, Position newPositionOfHead) {
+  snake.tail = snake.tail->next;
 
-  SnakePart* newHead = snake->tail->prev;
-  snake->tail->prev = NULL;
+  SnakePart* newHead = snake.tail->prev;
+  snake.tail->prev = NULL;
 
   newHead->next = NULL;
-  newHead->prev = snake->head;
-  newHead->position->row = newPositionOfHead.row;
-  newHead->position->column = newPositionOfHead.column;
-  snake->head->next = newHead;
-  snake->head = newHead;
+  newHead->prev = snake.head;
+  newHead->position.row = newPositionOfHead.row;
+  newHead->position.column = newPositionOfHead.column;
+  snake.head->next = newHead;
+  snake.head = newHead;
 }
 
-void startGame(GameState* gameState) {
-  gameState->started = true;
-  gameState->lost = false;
-  if (gameState->snake) deleteSnake(gameState->snake);
-  gameState->snake = initSnake(gameState->displayProperties);
-  gameState->lastMove = right;
+void startGame(GameState& gameState) {
+  gameState.started = true;
+  gameState.lost = false;
+  deleteSnake(gameState.snake);
+  gameState.snake = initSnake(gameState.displayProperties);
+  gameState.lastMove = right;
+  Serial.println("startGame - DONE");
 }
 
-void deleteSnake(Snake* snake) {
-  SnakePart* snakePart = snake->tail;
+void deleteSnake(Snake snake) {
+  SnakePart* snakePart = snake.tail;
   while(snakePart) {
     SnakePart* nextPart = snakePart->next;
-    delete snakePart->position;
     delete snakePart;
     snakePart = nextPart;
   }
-  delete snake;
 }
 
-Snake* initSnake(DisplayProperties* displayProperties) {
+Snake initSnake(DisplayProperties displayProperties) {
   Position position = centerPosition(displayProperties);
 
-  Snake* snake = new Snake;
-  snake->head = newSnakePart(position.column - 1, position.row);
-  snake->tail = newSnakePart(position.column, position.row);
+  Snake snake;
+  snake.head = newSnakePart(position.column, position.row);
+  SnakePart* middle = newSnakePart(position.column - 1, position.row);
+  snake.tail = newSnakePart(position.column - 2, position.row);
 
-  snake->head->next = NULL;
-  snake->head->prev = snake->tail;
+  snake.head->next = NULL;
+  snake.head->prev = middle;
 
-  snake->tail->next = snake->head;
-  snake->tail->prev = NULL;
+  middle->next = snake.head;
+  middle->prev = snake.tail;
+
+  snake.tail->next = middle;
+  snake.tail->prev = NULL;
 
   return snake;
 }
 
-Position centerPosition(DisplayProperties* displayProperties) {
+Position centerPosition(DisplayProperties displayProperties) {
   Position position;
 
-  position.row = displayProperties->maxSnakeRows / 2;
-  position.column = displayProperties->maxSnakeColumns / 2;
+  position.row = displayProperties.maxSnakeRows / 2;
+  position.column = displayProperties.maxSnakeColumns / 2;
 
   return position;
 }
 
 SnakePart* newSnakePart(int column, int row) {
-  Position* position = new Position;
-  position->column = column;
-  position->row = row;
+  Position position;
+  position.column = column;
+  position.row = row;
 
   SnakePart* snakePart = new SnakePart;
   snakePart->position = position;
@@ -235,38 +242,38 @@ SnakePart* newSnakePart(int column, int row) {
 }
 
 // RENDER GAME
-void renderGame(GameState* gameState) {
+void renderGame(GameState gameState) {
   arduboy.clear();
-  if (gameState->started) {
+  if (gameState.started) {
     renderInGameScreen(gameState);
-    if (gameState->lost) {
+    if (gameState.lost) {
       renderReplayScreen();
     }
   } else {
-     if(!gameState->lost) {
+     if(!gameState.lost) {
       renderInitialScreen();
     }
   }
   arduboy.display();
 }
 
-void renderInGameScreen(GameState* gameState) {
-  renderFrame(gameState->displayProperties, WHITE);
-  renderSnake(gameState->snake);
+void renderInGameScreen(GameState gameState) {
+  renderFrame(gameState.displayProperties, WHITE);
+  renderSnake(gameState.snake);
 }
 
-void renderFrame(DisplayProperties* displayProperties, uint8_t color) {
-  arduboy.drawFastVLine(0, 0, displayProperties->frameY, color);
-  arduboy.drawFastVLine(displayProperties->frameX, 0, displayProperties->frameY + FRAME_THICKNESS, color);
-  arduboy.drawFastHLine(0, 0, displayProperties->frameX, color);
-  arduboy.drawFastHLine(0, displayProperties->frameY, displayProperties->frameX + FRAME_THICKNESS, color);
+void renderFrame(DisplayProperties displayProperties, uint8_t color) {
+  arduboy.drawFastVLine(0, 0, displayProperties.frameY, color);
+  arduboy.drawFastVLine(displayProperties.frameX, 0, displayProperties.frameY + FRAME_THICKNESS, color);
+  arduboy.drawFastHLine(0, 0, displayProperties.frameX, color);
+  arduboy.drawFastHLine(0, displayProperties.frameY, displayProperties.frameX + FRAME_THICKNESS, color);
 }
 
-void renderSnake(Snake* snake) {
-  SnakePart* snakePart = snake->head;
+void renderSnake(Snake snake) {
+  SnakePart* snakePart = snake.head;
   while(snakePart) {
-    int column = calcPixelPosition(snakePart->position->column);
-    int row = calcPixelPosition(snakePart->position->row);
+    int column = calcPixelPosition(snakePart->position.column);
+    int row = calcPixelPosition(snakePart->position.row);
     arduboy.fillRect(column, row, SNAKE_WEIGHT, SNAKE_WEIGHT, WHITE);
     snakePart = snakePart->prev;
   }
