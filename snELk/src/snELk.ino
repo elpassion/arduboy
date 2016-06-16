@@ -1,5 +1,10 @@
 #include <Arduboy.h>
 
+#define SNAKE_WEIGHT 1
+#define SNAKE_SPACE 1
+#define FRAME_THICKNESS 1
+
+
 struct SnakePart {
   SnakePart* next;
   SnakePart* prev;
@@ -19,11 +24,19 @@ enum SnakeMove {
     down
 };
 
+struct DisplayProperties {
+  int maxSnakeRows;
+  int maxSnakeColumns;
+  int frameX;
+  int frameY;
+};
+
 struct GameState {
   bool started;
   bool lost;
   SnakeMove lastMove;
   Snake* snake;
+  DisplayProperties* displayProperties;
 };
 
 Arduboy arduboy;
@@ -39,7 +52,19 @@ GameState* initGameState() {
   gameState->snake = NULL;
   gameState->started = false;
   gameState->lost = false;
+  gameState->displayProperties = initDisplayProperties();
   return gameState;
+}
+
+DisplayProperties* initDisplayProperties() {
+  DisplayProperties* displayProperties = new DisplayProperties;
+
+  displayProperties->maxSnakeColumns = (WIDTH - 2*FRAME_THICKNESS - SNAKE_SPACE) / (SNAKE_WEIGHT + SNAKE_SPACE);
+  displayProperties->maxSnakeRows = (HEIGHT - 2*FRAME_THICKNESS - SNAKE_SPACE) / (SNAKE_WEIGHT + SNAKE_SPACE);
+  displayProperties->frameX = FRAME_THICKNESS + displayProperties->maxSnakeColumns * (SNAKE_WEIGHT + SNAKE_SPACE) + SNAKE_SPACE;
+  displayProperties->frameY = FRAME_THICKNESS + displayProperties->maxSnakeRows * (SNAKE_WEIGHT + SNAKE_SPACE) + SNAKE_SPACE;
+
+  return displayProperties;
 }
 
 void loop() {
@@ -106,7 +131,7 @@ bool validateMove(GameState* gameState, int column, int row) {
 }
 
 bool isFrameHit(int column, int row) {
-  return (column == 0 || column == (WIDTH - 1) || row == 0 || row == (HEIGHT - 1));
+  return (column == 0 || column == gameState->displayProperties->frameX || row == 0 || row == gameState->displayProperties->frameY);
 }
 
 void makeTailToBecomeHead(Snake* snake, int headColumn, int headRow) {
@@ -167,15 +192,12 @@ Snake* initSnake(int column, int row) {
 void renderGame(GameState* gameState) {
   arduboy.clear();
   if (gameState->started) {
-    Serial.println("in game screen");
     renderInGameScreen(gameState);
     if (gameState->lost) {
-      Serial.println("lost screen");
       renderReplayScreen();
     }
   } else {
      if(!gameState->lost) {
-      Serial.println("initial screen");
       renderInitialScreen();
     }
   }
@@ -188,10 +210,10 @@ void renderInGameScreen(GameState* gameState) {
 }
 
 void renderFrame(uint8_t color) {
-  arduboy.drawFastVLine(0, 0, HEIGHT, color);
-  arduboy.drawFastVLine(WIDTH - 1, 0, HEIGHT, color);
-  arduboy.drawFastHLine(0, HEIGHT - 1, WIDTH, color);
-  arduboy.drawFastHLine(0, 0, WIDTH, color);
+  arduboy.drawFastVLine(0, 0, gameState->displayProperties->frameY, color);
+  arduboy.drawFastVLine(gameState->displayProperties->frameX, 0, gameState->displayProperties->frameY + FRAME_THICKNESS, color);
+  arduboy.drawFastHLine(0, 0, gameState->displayProperties->frameX, color);
+  arduboy.drawFastHLine(0, gameState->displayProperties->frameY, gameState->displayProperties->frameX + FRAME_THICKNESS, color);
 }
 
 void renderSnake(Snake* snake) {
