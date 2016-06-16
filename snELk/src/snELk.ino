@@ -4,7 +4,6 @@
 #define SNAKE_SPACE 1
 #define FRAME_THICKNESS 1
 
-
 struct SnakePart {
   SnakePart* next;
   SnakePart* prev;
@@ -34,8 +33,8 @@ struct DisplayProperties {
 struct GameState {
   bool started;
   bool lost;
-  SnakeMove lastMove;
   Snake* snake;
+  SnakeMove lastMove;
   DisplayProperties* displayProperties;
 };
 
@@ -49,10 +48,12 @@ void setup() {
 
 GameState* initGameState() {
   GameState* gameState = new GameState;
+
   gameState->snake = NULL;
   gameState->started = false;
   gameState->lost = false;
   gameState->displayProperties = initDisplayProperties();
+
   return gameState;
 }
 
