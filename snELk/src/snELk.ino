@@ -60,12 +60,26 @@ GameState* initGameState() {
 DisplayProperties* initDisplayProperties() {
   DisplayProperties* displayProperties = new DisplayProperties;
 
-  displayProperties->maxSnakeColumns = (WIDTH - 2*FRAME_THICKNESS - SNAKE_SPACE) / (SNAKE_WEIGHT + SNAKE_SPACE);
-  displayProperties->maxSnakeRows = (HEIGHT - 2*FRAME_THICKNESS - SNAKE_SPACE) / (SNAKE_WEIGHT + SNAKE_SPACE);
-  displayProperties->frameX = FRAME_THICKNESS + displayProperties->maxSnakeColumns * (SNAKE_WEIGHT + SNAKE_SPACE) + SNAKE_SPACE;
-  displayProperties->frameY = FRAME_THICKNESS + displayProperties->maxSnakeRows * (SNAKE_WEIGHT + SNAKE_SPACE) + SNAKE_SPACE;
+  displayProperties->maxSnakeColumns = snakeLinesInSpace(WIDTH);
+  displayProperties->maxSnakeRows = snakeLinesInSpace(HEIGHT);
+  displayProperties->frameX = framePosition(displayProperties->maxSnakeColumns);
+  displayProperties->frameY = framePosition(displayProperties->maxSnakeRows);
 
   return displayProperties;
+}
+
+int snakeLinesInSpace(int screenLength) {
+  int spaceBetweenFrames = screenLength - 2*FRAME_THICKNESS;
+  int spaceBeforeRightFrame = SNAKE_SPACE;
+  int widthOfSingleSnakeLine = SNAKE_WEIGHT + SNAKE_SPACE;
+  return (spaceBetweenFrames - spaceBeforeRightFrame )/ widthOfSingleSnakeLine;
+}
+
+int framePosition(int snakeLines) {
+  int leftFrame = FRAME_THICKNESS;
+  int snakeSpace = snakeLines * (SNAKE_WEIGHT + SNAKE_SPACE);
+  int spaceBeforeRightFrame = SNAKE_SPACE;
+  return leftFrame + snakeSpace + spaceBeforeRightFrame;
 }
 
 void loop() {
