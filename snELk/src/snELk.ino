@@ -182,7 +182,7 @@ void startGame(GameState* gameState) {
   gameState->started = true;
   gameState->lost = false;
   if (gameState->snake) deleteSnake(gameState->snake);
-  gameState->snake = initSnake(50, 50);
+  gameState->snake = initSnake(gameState->displayProperties);
   gameState->lastMove = right;
 }
 
@@ -197,7 +197,14 @@ void deleteSnake(Snake* snake) {
   delete snake;
 }
 
-Snake* initSnake(int column, int row) {
+Snake* initSnake(DisplayProperties* displayProperties) {
+  int column = centerPixel(WIDTH);
+  int row = centerPixel(HEIGHT);
+
+  displayProperties->frameY;
+  displayProperties->maxSnakeColumns;
+  displayProperties->maxSnakeRows;
+
   Snake* snake = new Snake;
   snake->head = newSnakePart(column - 1, row);
   snake->tail = newSnakePart(column, row);
@@ -209,6 +216,10 @@ Snake* initSnake(int column, int row) {
   snake->tail->prev = NULL;
 
   return snake;
+}
+
+int centerPixel(int screenLength) {
+  return ((screenLength - 2*FRAME_THICKNESS) / 2) + FRAME_THICKNESS;
 }
 
 SnakePart* newSnakePart(int column, int row) {
