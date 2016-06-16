@@ -272,8 +272,8 @@ void renderSnake(Snake* snake) {
   }
 }
 
-int calcPixelPosition(int position) {
-  return FRAME_THICKNESS + SNAKE_SPACE + (SNAKE_WEIGHT + SNAKE_SPACE) * (position - 1);
+int calcPixelPosition(int snakePosition) {
+  return FRAME_THICKNESS + SNAKE_SPACE + (SNAKE_WEIGHT + SNAKE_SPACE) * (snakePosition - 1);
 }
 
 void renderReplayScreen() {
