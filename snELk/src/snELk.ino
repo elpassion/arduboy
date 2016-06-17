@@ -90,14 +90,16 @@ void loop() {
 void handleInput() {
   uint8_t buttons = arduboy.getInput();
 
+  SnakeMove lastMove = gameState.snake.lastMove;
+
   if(gameStartedAndNotLost()) {
-    if(buttons & LEFT_BUTTON) {
+    if(buttons & LEFT_BUTTON && lastMove != right) {
       gameState.snake.nextMove = left;
-    } else if(buttons & RIGHT_BUTTON) {
+    } else if(buttons & RIGHT_BUTTON && lastMove != left) {
       gameState.snake.nextMove = right;
-    } else if(buttons & UP_BUTTON) {
+    } else if(buttons & UP_BUTTON && lastMove != down) {
       gameState.snake.nextMove = up;
-    } else if(buttons & DOWN_BUTTON) {
+    } else if(buttons & DOWN_BUTTON && lastMove != up) {
       gameState.snake.nextMove = down;
     }
   } else {
@@ -181,6 +183,7 @@ void gameTick() {
 
   if (validateMove(column, row)) {
     moveSnake(column, row);
+    gameState.snake.lastMove = nextMove;
   } else {
     gameState.lost = true;
   }
