@@ -279,10 +279,37 @@ void renderFrame(uint8_t color) {
 
 void renderSnake() {
   Snake snake = gameState.snake;
-  for(int i = 0 ; i <= snake.headIndex ; i++) {
+  int prevColumnPixel = calcPixelPosition(encodeColumn(snake.positions[0]));
+  int prevRowPixel = calcPixelPosition(encodeRow(snake.positions[0]));
+  arduboy.fillRect(prevColumnPixel, prevRowPixel, SNAKE_WEIGHT, SNAKE_WEIGHT, WHITE);
+
+  for(int i = 1 ; i <= snake.headIndex ; i++) {
     int columnPixel = calcPixelPosition(encodeColumn(snake.positions[i]));
     int rowPixel = calcPixelPosition(encodeRow(snake.positions[i]));
-    arduboy.fillRect(columnPixel, rowPixel, SNAKE_WEIGHT, SNAKE_WEIGHT, WHITE);
+
+    int columnToPrint = columnPixel;
+    int rowToPrint = rowPixel;
+    int widthToPrint = SNAKE_WEIGHT;
+    int heightToPrint = SNAKE_WEIGHT;
+
+    if (columnPixel > prevColumnPixel) {
+      columnToPrint -= SNAKE_SPACE;
+      widthToPrint += SNAKE_SPACE;
+    } else if (columnPixel == prevColumnPixel) {
+      if (rowPixel > prevRowPixel) {
+        rowToPrint -= SNAKE_SPACE;
+        heightToPrint += SNAKE_SPACE;
+      } else {
+        heightToPrint += SNAKE_SPACE;
+      }
+    } else {
+      widthToPrint += SNAKE_SPACE;
+    }
+
+    arduboy.fillRect(columnToPrint, rowToPrint, widthToPrint, heightToPrint, WHITE);
+
+    prevColumnPixel = columnPixel;
+    prevRowPixel = rowPixel;
   }
 }
 
