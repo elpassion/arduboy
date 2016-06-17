@@ -128,7 +128,7 @@ void initSnake() {
   appendToSnakeHead(centerColumn - 1, centerRow);
   appendToSnakeHead(centerColumn, centerRow);
 
-  shuffle_positions(gameState.snake.headIndex + 1, gameState.snake.lastPositionIndex);
+  shufflePositions(gameState.snake.headIndex + 1, gameState.snake.lastPositionIndex);
   gameState.snake.lastMove = right;
   gameState.snake.nextMove = right;
 }
@@ -146,18 +146,7 @@ void appendToSnakeHead(int column, int row) {
   swap(++gameState.snake.headIndex, index);
 }
 
-int findIndexOfPosition(int column, int row) {
-  Snake snake = gameState.snake;
-  int position = decodePosition(column, row);
-  for (int i = 0; i <= snake.lastPositionIndex ; i++) {
-    if (snake.positions[i] == position) {
-      return i;
-    }
-  }
-  return -1;
-}
-
-void shuffle_positions(int firstIndex, int lastIndex) {
+void shufflePositions(int firstIndex, int lastIndex) {
   for (int i = firstIndex ; i < lastIndex ; i++) {
     int randomIndex = random(firstIndex, lastIndex + 1);
     if (randomIndex != firstIndex) {
@@ -200,7 +189,7 @@ void gameTick() {
 }
 
 bool validateMove(int column, int row) {
-  return !isFrameHit(column, row);
+  return !isFrameHit(column, row) && !snakeHit(column, row);
 }
 
 bool isFrameHit(int column, int row) {
@@ -210,19 +199,44 @@ bool isFrameHit(int column, int row) {
     row >= gameState.displayProperties.maxSnakeRows;
 }
 
+bool snakeHit(int column, int row) {
+  int position = decodePosition(column, row);
+  Snake snake = gameState.snake;
+  for (int i = 1 ; i <= snake.headIndex ; i++) {
+    if (snake.positions[i] == position) {
+      return true;
+    }
+  }
+  return false;
+}
+
 void moveSnake(int column, int row) {
   int newHeadIndex = findIndexOfPosition(column, row);
   if (isFood(newHeadIndex)) {
     gameState.snake.headIndex++;
   } else {
     Snake snake = gameState.snake;
-    int tail = snake.positions[0];
+    int newHeadPosition = snake.positions[newHeadIndex];
+    int tailPosition = snake.positions[0];
     for (int i = 0 ; i < snake.headIndex; i++) {
       snake.positions[i] = snake.positions[i+1];
     }
-    snake.positions[snake.headIndex] = snake.positions[newHeadIndex];
-    snake.positions[newHeadIndex] = tail;
+    snake.positions[snake.headIndex] = newHeadPosition;
+    if (newHeadPosition != tailPosition) {
+      snake.positions[newHeadIndex] = tailPosition;
+    }
   }
+}
+
+int findIndexOfPosition(int column, int row) {
+  Snake snake = gameState.snake;
+  int position = decodePosition(column, row);
+  for (int i = 0; i <= snake.lastPositionIndex ; i++) {
+    if (snake.positions[i] == position) {
+      return i;
+    }
+  }
+  return -1;
 }
 
 bool isFood(int index) {
