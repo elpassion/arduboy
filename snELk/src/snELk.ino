@@ -90,9 +90,9 @@ void loop() {
 void handleInput() {
   uint8_t buttons = arduboy.getInput();
 
-  SnakeMove lastMove = gameState.snake.lastMove;
-
   if(gameStartedAndNotLost()) {
+    SnakeMove lastMove = gameState.snake.lastMove;
+
     if(buttons & LEFT_BUTTON && lastMove != right) {
       gameState.snake.nextMove = left;
     } else if(buttons & RIGHT_BUTTON && lastMove != left) {
@@ -201,15 +201,22 @@ bool isFrameHit(int column, int row) {
 }
 
 void moveSnake(int column, int row) {
-  Snake snake = gameState.snake;
-  int tail = snake.positions[0];
-
-  for (int i = 0 ; i < snake.headIndex; i++) {
-    snake.positions[i] = snake.positions[i+1];
-  }
   int newHeadIndex = findIndexOfPosition(column, row);
-  snake.positions[snake.headIndex] = snake.positions[newHeadIndex];
-  snake.positions[newHeadIndex] = tail;
+  if (isFood(newHeadIndex)) {
+    gameState.snake.headIndex++;
+  } else {
+    Snake snake = gameState.snake;
+    int tail = snake.positions[0];
+    for (int i = 0 ; i < snake.headIndex; i++) {
+      snake.positions[i] = snake.positions[i+1];
+    }
+    snake.positions[snake.headIndex] = snake.positions[newHeadIndex];
+    snake.positions[newHeadIndex] = tail;
+  }
+}
+
+bool isFood(int index) {
+  return index == (gameState.snake.headIndex + 1);
 }
 
 // RENDER GAME
@@ -231,6 +238,7 @@ void renderGame() {
 void renderInGameScreen() {
   renderFrame(WHITE);
   renderSnake();
+  renderFood();
 }
 
 void renderFrame(uint8_t color) {
@@ -253,6 +261,44 @@ void renderSnake() {
 
 int calcPixelPosition(int snakePosition) {
   return FRAME_THICKNESS + SNAKE_SPACE + (SNAKE_WEIGHT + SNAKE_SPACE) * snakePosition;
+}
+
+void renderFood() {
+  int foodIndex = gameState.snake.headIndex + 1;
+  int columnPixel = calcPixelPosition(encodeColumn(gameState.snake.positions[foodIndex]));
+  int rowPixel = calcPixelPosition(encodeRow(gameState.snake.positions[foodIndex]));
+
+  // left-up
+  arduboy.drawLine(
+    columnPixel,
+    rowPixel + SNAKE_WEIGHT/2,
+    columnPixel + SNAKE_WEIGHT/2,
+    rowPixel,
+    WHITE);
+
+  // left-down
+  arduboy.drawLine(
+    columnPixel,
+    rowPixel + SNAKE_WEIGHT/2,
+    columnPixel + SNAKE_WEIGHT/2,
+    rowPixel + SNAKE_WEIGHT - 1,
+    WHITE);
+
+  // right-up
+  arduboy.drawLine(
+    columnPixel + SNAKE_WEIGHT - 1,
+    rowPixel + SNAKE_WEIGHT/2,
+    columnPixel + SNAKE_WEIGHT/2,
+    rowPixel,
+    WHITE);
+
+  // right-down
+  arduboy.drawLine(
+    columnPixel + SNAKE_WEIGHT - 1,
+    rowPixel + SNAKE_WEIGHT/2,
+    columnPixel + SNAKE_WEIGHT/2,
+    rowPixel + SNAKE_WEIGHT - 1,
+    WHITE);
 }
 
 void renderReplayScreen() {
