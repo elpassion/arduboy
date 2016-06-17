@@ -17,6 +17,7 @@ enum SnakeMove {
 struct Snake {
   SnakeMove lastMove;
   SnakeMove nextMove;
+  int score;
   int headIndex;
   int lastPositionIndex;
   int* positions;
@@ -139,6 +140,7 @@ void clearSnake() {
   }
   gameState.snake.headIndex = -1;
   gameState.snake.lastPositionIndex = gameState.displayProperties.maxSnakeColumns * gameState.displayProperties.maxSnakeRows - 1;
+  gameState.snake.score = 0;
 }
 
 void appendToSnakeHead(int column, int row) {
@@ -214,6 +216,7 @@ void moveSnake(int column, int row) {
   int newHeadIndex = findIndexOfPosition(column, row);
   if (isFood(newHeadIndex)) {
     gameState.snake.headIndex++;
+    gameState.snake.score++;
   } else {
     Snake snake = gameState.snake;
     int newHeadPosition = snake.positions[newHeadIndex];
@@ -326,9 +329,13 @@ void renderFood() {
 }
 
 void renderReplayScreen() {
-  arduboy.setCursor(37, 15);
+  arduboy.setCursor(37, 4);
   arduboy.print(F("GAME OVER"));
-  arduboy.setCursor(16, 30);
+  arduboy.setCursor(16, 38);
+  arduboy.print(F("Score:"));
+  arduboy.setCursor(51, 38);
+  arduboy.print(gameState.snake.score);
+  arduboy.setCursor(16, 50);
   arduboy.print(F("Press A to start"));
 }
 
