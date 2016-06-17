@@ -7,7 +7,6 @@
 
 struct SnakePart {
   SnakePart* next;
-  SnakePart* prev;
   int row;
   int column;
 };
@@ -155,17 +154,15 @@ bool isFrameHit(DisplayProperties displayProperties, int column, int row) {
 }
 
 void makeTailToBecomeNewHead(Snake& snake, int column, int row) {
+  SnakePart* oldTail = snake.tail;
+
   snake.tail = snake.tail->next;
 
-  SnakePart* newHead = snake.tail->prev;
-  snake.tail->prev = NULL;
-
-  newHead->next = NULL;
-  newHead->prev = snake.head;
-  newHead->row = row;
-  newHead->column = column;
-  snake.head->next = newHead;
-  snake.head = newHead;
+  oldTail->next = NULL;
+  oldTail->row = row;
+  oldTail->column = column;
+  snake.head->next = oldTail;
+  snake.head = oldTail;
 }
 
 void startGame(GameState& gameState) {
@@ -194,14 +191,9 @@ Snake initSnake(DisplayProperties displayProperties) {
   SnakePart* middle = newSnakePart(centerColumn - 1, centerRow);
   snake.tail = newSnakePart(centerColumn - 2, centerRow);
 
-  snake.head->next = NULL;
-  snake.head->prev = middle;
-
-  middle->next = snake.head;
-  middle->prev = snake.tail;
-
   snake.tail->next = middle;
-  snake.tail->prev = NULL;
+  middle->next = snake.head;
+  snake.head->next = NULL;
 
   return snake;
 }
@@ -244,12 +236,12 @@ void renderFrame(DisplayProperties displayProperties, uint8_t color) {
 }
 
 void renderSnake(Snake snake) {
-  SnakePart* snakePart = snake.head;
+  SnakePart* snakePart = snake.tail;
   while(snakePart) {
     int column = calcPixelPosition(snakePart->column);
     int row = calcPixelPosition(snakePart->row);
     arduboy.fillRect(column, row, SNAKE_WEIGHT, SNAKE_WEIGHT, WHITE);
-    snakePart = snakePart->prev;
+    snakePart = snakePart->next;
   }
 }
 
