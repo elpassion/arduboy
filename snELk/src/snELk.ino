@@ -21,6 +21,7 @@ struct Snake {
   int headIndex;
   int lastPositionIndex;
   int* positions;
+  bool fault;
 };
 
 struct DisplayProperties {
@@ -141,6 +142,7 @@ void clearSnake() {
   gameState.snake.headIndex = -1;
   gameState.snake.lastPositionIndex = gameState.displayProperties.maxSnakeColumns * gameState.displayProperties.maxSnakeRows - 1;
   gameState.snake.score = 0;
+  gameState.snake.fault = false;
 }
 
 void appendToSnakeHead(int column, int row) {
@@ -185,8 +187,13 @@ void gameTick() {
   if (validateMove(column, row)) {
     moveSnake(column, row);
     gameState.snake.lastMove = nextMove;
+    gameState.snake.fault = false;
   } else {
-    gameState.lost = true;
+    if (gameState.snake.lastMove == gameState.snake.nextMove && !gameState.snake.fault) {
+      gameState.snake.fault = true;
+    } else {
+      gameState.lost = true;
+    }
   }
 }
 
