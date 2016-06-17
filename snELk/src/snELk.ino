@@ -128,6 +128,7 @@ void initSnake() {
   appendToSnakeHead(centerColumn - 1, centerRow);
   appendToSnakeHead(centerColumn, centerRow);
 
+  shuffle_positions(gameState.snake.headIndex + 1, gameState.snake.lastPositionIndex);
   gameState.snake.lastMove = right;
   gameState.snake.nextMove = right;
 }
@@ -154,6 +155,15 @@ int findIndexOfPosition(int column, int row) {
     }
   }
   return -1;
+}
+
+void shuffle_positions(int firstIndex, int lastIndex) {
+  for (int i = firstIndex ; i < lastIndex ; i++) {
+    int randomIndex = random(firstIndex, lastIndex + 1);
+    if (randomIndex != firstIndex) {
+      swap(firstIndex, randomIndex);
+    }
+  }
 }
 
 void swap(int firstIndex, int secondIndex) {
