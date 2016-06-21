@@ -35,6 +35,8 @@ struct DisplayProperties {
 struct GameState {
   bool started;
   bool lost;
+  bool showGameOverText;
+  bool bButtonPressed;
   Snake snake;
   DisplayProperties displayProperties;
 };
@@ -44,13 +46,15 @@ GameState gameState;
 
 void setup() {
   arduboy.begin();
-  arduboy.setFrameRate(1);
+  arduboy.setFrameRate(10);
   initGame();
 }
 
 GameState initGame() {
   gameState.started = false;
   gameState.lost = false;
+  gameState.showGameOverText = true;
+  gameState.bButtonPressed = false;
   gameState.displayProperties = initDisplayProperties();
   gameState.snake.positions =  new int[MAX_POSITIONS];
 }
@@ -109,6 +113,14 @@ void handleInput() {
     if(buttons & A_BUTTON) {
       startGame();
     }
+    if (buttons & B_BUTTON) {
+      if (!gameState.bButtonPressed) {
+        gameState.showGameOverText = !gameState.showGameOverText;
+        gameState.bButtonPressed = true;
+      }
+    } else {
+      gameState.bButtonPressed = false;
+    }
   }
 }
 
@@ -119,6 +131,7 @@ bool gameStartedAndNotLost() {
 void startGame() {
   gameState.started = true;
   gameState.lost = false;
+  gameState.showGameOverText = true;
   initSnake();
 }
 
@@ -261,8 +274,8 @@ void renderGame() {
   arduboy.clear();
   if (gameState.started) {
     renderInGameScreen();
-    if (gameState.lost) {
-      renderReplayScreen();
+    if (gameState.lost && gameState.showGameOverText) {
+      renderGameOverText();
     }
   } else {
      if(!gameState.lost) {
@@ -365,21 +378,17 @@ void renderFood() {
     WHITE);
 }
 
-void renderReplayScreen() {
-  arduboy.setCursor(37, 4);
+void renderGameOverText() {
+  arduboy.setCursor(37, 16);
   arduboy.print(F("GAME OVER"));
-  arduboy.setCursor(16, 38);
-  arduboy.print(F("Score:"));
-  arduboy.setCursor(51, 38);
+  arduboy.setCursor(37, 28);
+  arduboy.print(F("Score"));
+  arduboy.setCursor(72, 28);
   arduboy.print(gameState.snake.score);
-  arduboy.setCursor(16, 50);
-  arduboy.print(F("Press A to start"));
 }
 
 void renderInitialScreen() {
   arduboy.drawBitmap(0, 0, snelk_intro + 2, snelk_intro[0], snelk_intro[1], WHITE);
-  arduboy.setCursor(16, 57);
-  arduboy.print(F("Press A to start"));
 }
 
 // POSITION ENCODING
