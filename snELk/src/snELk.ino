@@ -1,5 +1,6 @@
 #include <MemoryFree.h>
 #include <Arduboy.h>
+#include "assets.h"
 
 #define SNAKE_WEIGHT 3
 #define SNAKE_SPACE 1
@@ -374,7 +375,8 @@ void renderReplayScreen() {
 }
 
 void renderInitialScreen() {
-  arduboy.setCursor(16, 50);
+  arduboy.drawBitmap(0, 0, snelk_intro + 2, snelk_intro[0], snelk_intro[1], WHITE);
+  arduboy.setCursor(16, 57);
   arduboy.print(F("Press A to start"));
 }
 
