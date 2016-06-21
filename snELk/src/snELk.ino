@@ -8,6 +8,12 @@
 
 #define MAX_POSITIONS 465
 
+#define EAT_TONE_FREQUENCY 1200
+#define EAT_TONE_DURATION 20
+
+#define LOSE_TONE_FREQUENCY 65
+#define LOSE_TONE_DURATION 750
+
 enum SnakeMove {
     left,
     right,
@@ -39,6 +45,7 @@ struct GameState {
   bool bButtonPressed;
   bool upButtonPressed;
   bool downButtonPressed;
+  bool sound;
   int level;
   Snake snake;
   DisplayProperties displayProperties;
@@ -144,6 +151,9 @@ void handleInput() {
     if (buttons & B_BUTTON) {
       if (!gameState.bButtonPressed) {
         gameState.showGameOverText = !gameState.showGameOverText;
+        if (!gameState.started) {
+          gameState.sound = !gameState.sound;
+        }
         gameState.bButtonPressed = true;
       }
     } else {
@@ -213,7 +223,7 @@ void swap(int firstIndex, int secondIndex) {
 }
 
 void gameTick() {
-  if (!gameState.started) return;
+  if (!gameState.started || gameState.lost) return;
   int positionOfHead = gameState.snake.positions[gameState.snake.headIndex];
   int column = encodeColumn(positionOfHead);
   int row = encodeRow(positionOfHead);
@@ -237,6 +247,9 @@ void gameTick() {
     if (gameState.snake.lastMove == gameState.snake.nextMove && !gameState.snake.fault) {
       gameState.snake.fault = true;
     } else {
+      if (gameState.sound) {
+        arduboy.tunes.tone(LOSE_TONE_FREQUENCY, LOSE_TONE_DURATION);
+      }
       gameState.lost = true;
     }
   }
@@ -267,6 +280,9 @@ bool snakeHit(int column, int row) {
 void moveSnake(int column, int row) {
   int newHeadIndex = findIndexOfPosition(column, row);
   if (isFood(newHeadIndex)) {
+    if (gameState.sound) {
+      arduboy.tunes.tone(EAT_TONE_FREQUENCY, EAT_TONE_DURATION);
+    }
     gameState.snake.headIndex++;
     gameState.snake.score += gameState.level;
   } else {
@@ -426,6 +442,10 @@ void renderInitialScreen() {
   arduboy.print("level");
   arduboy.setCursor(35, 57);
   arduboy.print(gameState.level);
+  arduboy.setCursor(72, 57);
+  arduboy.print("sound");
+  arduboy.setCursor(72 + 39, 57);
+  arduboy.print(gameState.sound ? "on" : "off");
 }
 
 // POSITION ENCODING
