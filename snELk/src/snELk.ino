@@ -37,6 +37,9 @@ struct GameState {
   bool lost;
   bool showGameOverText;
   bool bButtonPressed;
+  bool upButtonPressed;
+  bool downButtonPressed;
+  int level;
   Snake snake;
   DisplayProperties displayProperties;
 };
@@ -46,15 +49,18 @@ GameState gameState;
 
 void setup() {
   arduboy.begin();
-  arduboy.setFrameRate(10);
   initGame();
+  arduboy.setFrameRate(gameState.level);
 }
 
 GameState initGame() {
   gameState.started = false;
   gameState.lost = false;
   gameState.showGameOverText = true;
+  gameState.upButtonPressed = false;
+  gameState.downButtonPressed = false;
   gameState.bButtonPressed = false;
+  gameState.level = 10;
   gameState.displayProperties = initDisplayProperties();
   gameState.snake.positions =  new int[MAX_POSITIONS];
 }
@@ -110,6 +116,28 @@ void handleInput() {
       gameState.snake.nextMove = down;
     }
   } else {
+    if(buttons & UP_BUTTON) {
+      if (!gameState.upButtonPressed) {
+        if (gameState.level < 20) {
+          gameState.level++;
+        }
+        gameState.upButtonPressed = true;
+      }
+    } else {
+      gameState.upButtonPressed = false;
+    }
+
+    if(buttons & DOWN_BUTTON) {
+      if (!gameState.downButtonPressed) {
+        if (gameState.level > 1) {
+          gameState.level--;
+        }
+        gameState.downButtonPressed = true;
+      }
+    } else {
+      gameState.downButtonPressed = false;
+    }
+
     if(buttons & A_BUTTON) {
       startGame();
     }
@@ -132,6 +160,7 @@ void startGame() {
   gameState.started = true;
   gameState.lost = false;
   gameState.showGameOverText = true;
+  arduboy.setFrameRate(gameState.level);
   initSnake();
 }
 
@@ -239,7 +268,7 @@ void moveSnake(int column, int row) {
   int newHeadIndex = findIndexOfPosition(column, row);
   if (isFood(newHeadIndex)) {
     gameState.snake.headIndex++;
-    gameState.snake.score++;
+    gameState.snake.score += gameState.level;
   } else {
     Snake snake = gameState.snake;
     int newHeadPosition = snake.positions[newHeadIndex];
@@ -385,10 +414,18 @@ void renderGameOverText() {
   arduboy.print(F("Score"));
   arduboy.setCursor(72, 28);
   arduboy.print(gameState.snake.score);
+  arduboy.setCursor(3, 53);
+  arduboy.print("level");
+  arduboy.setCursor(38, 53);
+  arduboy.print(gameState.level);
 }
 
 void renderInitialScreen() {
   arduboy.drawBitmap(0, 0, snelk_intro + 2, snelk_intro[0], snelk_intro[1], WHITE);
+  arduboy.setCursor(0, 57);
+  arduboy.print("level");
+  arduboy.setCursor(35, 57);
+  arduboy.print(gameState.level);
 }
 
 // POSITION ENCODING
