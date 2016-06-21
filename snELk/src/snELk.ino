@@ -152,6 +152,8 @@ void appendToSnakeHead(int column, int row) {
 }
 
 void shufflePositions(int firstIndex, int lastIndex) {
+  arduboy.initRandomSeed();
+
   for (int i = firstIndex ; i < lastIndex ; i++) {
     int randomIndex = random(firstIndex, lastIndex + 1);
     if (randomIndex != firstIndex) {
