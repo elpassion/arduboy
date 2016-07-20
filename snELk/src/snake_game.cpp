@@ -22,7 +22,9 @@ void SnakeGame::setNextMove(SnakeMove move) {
 void SnakeGame::gameTick() {
   if (getState() == IN_GAME) {
     SnakeState state = snakeController.moveSnake();
-    if (state == died) {
+    if (state == ate) {
+      score += settings.getLevel();
+    } else if (state == died) {
       lost = true;
     }
   }
