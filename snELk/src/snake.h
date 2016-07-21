@@ -1,7 +1,8 @@
 #ifndef snake_h
 #define snake_h
 
-enum SnakeState {idle, moved, ate, died};
+enum SnakeState {moved, ate, died};
+
 enum SnakeMove {left, right, up, down};
 
 class Snake {
