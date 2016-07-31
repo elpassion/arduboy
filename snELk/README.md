@@ -38,3 +38,10 @@ Example array with game state. Snake is present at points: 13, 14, 8, 2, 3, food
 | 0 | 1 | 2 | 3 | 4 / headIndex  | 5 | 6 | 7 | ... |  23|
 |:-:|:-:|:-:|:-:|:--------------:|:-:|:-:|:-:|:---:|:-:|
 | 13| 14| 8 | 2 |        3       | 16| 18| 21| ... | 6 |
+
+## Back to C++
+C++ is my first programming language that I've got to known. I was learning C++ before college and even there I had to know that language to accomplish many projects. Despite this after more than half of the year pogramming in Ruby, I found it quite difficult to go back to C++.
+
+Most of all I got used to dynamic types. It's pretty annoying that you have to name each data structures instead of use simple `Hash`. Next thing is syntax. Ruby has beautiful syntax while in C++ you have a lot of curly brackets and semicolons
+
+To sum up, it was a lot of fun to go back to where it all began but I can't imagine that I would be using C++ in my day job. More of that, snELk is my very first game I've ever written and I'm really proud of it.
